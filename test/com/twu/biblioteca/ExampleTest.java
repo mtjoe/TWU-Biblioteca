@@ -1,13 +1,19 @@
 package com.twu.biblioteca;
 
 
+import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
-public class ExampleTest {
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 
-    @Test
-    public void test() {
-        assertEquals(1, 1);
+
+public class ExampleTest {
+    Biblioteca library;
+
+    @Before
+    public void setUp() {
+        library = new Biblioteca();
     }
 }
