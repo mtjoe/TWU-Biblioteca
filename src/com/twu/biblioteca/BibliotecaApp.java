@@ -6,7 +6,6 @@ public class BibliotecaApp {
         Biblioteca library = new Biblioteca();
 
         library.printGreetings();
-        library.listBooks();
-
+        library.run();
     }
 }

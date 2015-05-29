@@ -30,7 +30,9 @@ public class Biblioteca {
 
     public void listBooks() {
         for (int i=0; i<books.size(); i++) {
-            System.out.print(i + " - " + books.get(i).toString());
+            if (!books.get(i).checkedout) {
+                System.out.print(i + " - " + books.get(i).toString());
+            }
         }
     }
 
@@ -63,6 +65,17 @@ public class Biblioteca {
                 case ("List Books"):
                     listBooks();
                     break;
+                case ("Checkout"):
+                    listBooks();
+                    System.out.println("Please type in the number corresponding to the book you would like to checkout, or type in -1 to go back to the main menu:");
+                    int input = Integer.parseInt(in.nextLine());
+
+                    if (input == -1) return;
+                    while (checkout(input) == null) {
+                        System.out.println("Please type in the number corresponding to the book you would like to checkout, or type in -1 to go back to the main menu:");
+                        input = Integer.parseInt(in.nextLine());
+                    }
+                    break;
                 case ("Quit"):
                     System.exit(0);
                     break;
@@ -73,8 +86,9 @@ public class Biblioteca {
 
     public Book checkout(int n) {
         try {
-            books.get(n).checkedout = true;
-            Book book = books.remove(n);
+            Book book = books.get(n);
+            book.checkedout = true;
+
             System.out.println("Thank you! Enjoy the book");
             return book;
         } catch (IndexOutOfBoundsException e) {

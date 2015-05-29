@@ -19,6 +19,8 @@ public class ExampleTest {
     @Before
     public void setUp() {
         library = new Biblioteca();
+
+        // For testing print statements
         out = new ByteArrayOutputStream();
         System.setOut(new PrintStream(out));
     }
@@ -74,5 +76,10 @@ public class ExampleTest {
         String printed = new String(out.toByteArray());
 
         assertEquals(printed, "That book is not available.\n");
+    }
+
+    @Test
+    public void testReturn() {
+        
     }
 }
