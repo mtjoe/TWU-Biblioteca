@@ -35,7 +35,7 @@ public class ExampleTest {
 
     @Test
     public void testMenuListBooks() throws IOException {
-        library.listBooks();
+        library.listBooks(false);
         String printed = new String(out.toByteArray());
 
         String[] output = printed.split("\n");
@@ -44,7 +44,7 @@ public class ExampleTest {
 
     @Test
     public void testBookDetails() throws IOException {
-        library.listBooks();
+        library.listBooks(false);
         String printed = new String(out.toByteArray());
 
         String[] output = printed.split("\n");
@@ -66,7 +66,6 @@ public class ExampleTest {
         String printed = new String(out.toByteArray());
 
         assertEquals(printed, "Thank you! Enjoy the book\n");
-        assertFalse(library.getBooks().contains(book));
         assertTrue(book.checkedout);
     }
 
@@ -79,7 +78,31 @@ public class ExampleTest {
     }
 
     @Test
-    public void testReturn() {
-        
+    public void testReturn() throws IOException {
+        Book book = library.checkout(0);
+
+        library.returnBook(0);
+        String printed = new String(out.toByteArray());
+
+        assertEquals(printed, "Thank you! Enjoy the book\nThank you for returning the book.\n");
+        assertFalse(book.checkedout);
+    }
+
+    @Test
+    public void testReturnFail() throws IOException {
+        Book book = library.returnBook(library.getBooks().size());
+        String printed = new String(out.toByteArray());
+
+        assertEquals(printed, "That is not a valid book to return.\n");
+    }
+
+    @Test
+    public void testReturnStillInLibraryFail() throws IOException {
+        if (library.getBooks().size() > 0) {
+            library.returnBook(0);
+            String printed = new String(out.toByteArray());
+
+            assertEquals(printed, "That is not a valid book to return.\n");
+        }
     }
 }

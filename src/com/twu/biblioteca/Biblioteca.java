@@ -9,7 +9,7 @@ import java.util.Scanner;
  */
 public class Biblioteca {
     List<Book> books;
-    String[] mainMenu = new String[] {"List Books", "Checkout", "Quit"};
+    String[] mainMenu = new String[] {"List Books", "Checkout Book", "Return Book", "Quit"};
     Scanner in;
 
     public Biblioteca() {
@@ -28,9 +28,10 @@ public class Biblioteca {
         System.out.println("Hello, Welcome to the Biblioteca!");
     }
 
-    public void listBooks() {
+    public void listBooks(boolean checkedout) {
         for (int i=0; i<books.size(); i++) {
-            if (!books.get(i).checkedout) {
+            if ((books.get(i).checkedout && checkedout) ||
+                    (!books.get(i).checkedout && !checkedout)) {
                 System.out.print(i + " - " + books.get(i).toString());
             }
         }
@@ -63,16 +64,27 @@ public class Biblioteca {
         } else {
             switch (mainMenu[n]) {
                 case ("List Books"):
-                    listBooks();
+                    listBooks(false);
                     break;
-                case ("Checkout"):
-                    listBooks();
+                case ("Checkout Book"):
+                    listBooks(false);
                     System.out.println("Please type in the number corresponding to the book you would like to checkout, or type in -1 to go back to the main menu:");
                     int input = Integer.parseInt(in.nextLine());
 
                     if (input == -1) return;
                     while (checkout(input) == null) {
                         System.out.println("Please type in the number corresponding to the book you would like to checkout, or type in -1 to go back to the main menu:");
+                        input = Integer.parseInt(in.nextLine());
+                    }
+                    break;
+                case ("Return Book"):
+                    listBooks(true);
+                    System.out.println("Please type in the number corresponding to the book you would like to return, or type in -1 to go back to the main menu:");
+                    input = Integer.parseInt(in.nextLine());
+
+                    if (input == -1) return;
+                    while (returnBook(input) == null) {
+                        System.out.println("Please type in the number corresponding to the book you would like to return, or type in -1 to go back to the main menu:");
                         input = Integer.parseInt(in.nextLine());
                     }
                     break;
@@ -87,12 +99,33 @@ public class Biblioteca {
     public Book checkout(int n) {
         try {
             Book book = books.get(n);
-            book.checkedout = true;
 
-            System.out.println("Thank you! Enjoy the book");
+            if (!book.checkedout) {
+                book.checkedout = true;
+                System.out.println("Thank you! Enjoy the book");
+            } else {
+                throw new IndexOutOfBoundsException();
+            }
             return book;
         } catch (IndexOutOfBoundsException e) {
             System.out.println("That book is not available.");
+            return null;
+        }
+    }
+
+    public Book returnBook(int n) {
+        try {
+            Book book = books.get(n);
+
+            if (book.checkedout) {
+                book.checkedout = false;
+                System.out.println("Thank you for returning the book.");
+            } else {
+                throw new IndexOutOfBoundsException();
+            }
+            return book;
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("That is not a valid book to return.");
             return null;
         }
     }
