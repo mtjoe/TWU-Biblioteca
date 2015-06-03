@@ -13,25 +13,43 @@ import java.util.Map;
  */
 public class Biblioteca {
     List<Book> books;
-    // String[] mainMenu = new String[] {"List Books", "Checkout Book", "Return Book", "Quit"};
+    List<Movie> movies;
 
     Map<String, Callable<Integer>> mainMenu = new HashMap<String, Callable<Integer>>() {
         {
-            put("List", new Callable<Integer>() {
+            put("List Books", new Callable<Integer>() {
                 public Integer call() {
                     listBooks(false);
                     return 1;
                 }
             });
-            put("Checkout", new Callable<Integer>() {
+            put("List Movies", new Callable<Integer>() {
                 public Integer call() {
-                    continuousRunMenuItem("checkout");
+                    listMovies(false);
                     return 1;
                 }
             });
-            put("Return", new Callable<Integer>() {
+            put("Checkout Book", new Callable<Integer>() {
                 public Integer call() {
-                    continuousRunMenuItem("return");
+                    continuousRunMenuItem("checkout", 'b');
+                    return 1;
+                }
+            });
+            put("Return Book", new Callable<Integer>() {
+                public Integer call() {
+                    continuousRunMenuItem("return", 'b');
+                    return 1;
+                }
+            });
+            put("Checkout Movie", new Callable<Integer>() {
+                public Integer call() {
+                    continuousRunMenuItem("checkout", 'm');
+                    return 1;
+                }
+            });
+            put("Return Movie", new Callable<Integer>() {
+                public Integer call() {
+                    continuousRunMenuItem("return", 'm');
                     return 1;
                 }
             });
@@ -55,6 +73,15 @@ public class Biblioteca {
                 add(new Book("Pride & Prejudice", "Jane Austen", 1948));
             }
         };
+
+        movies = new ArrayList<Movie>() {
+            {
+                add(new Movie("Shawshank Redemption", 1994, "Frank Darabont", 9.2));
+                add(new Movie("The Godfather", 1972, "Francis Ford Coppola", 9.2));
+                add(new Movie("The Dark Knight", 2008, "Christopher Nolan", 8.9));
+            }
+        };
+
     }
 
     public void printGreetings() {
@@ -81,43 +108,59 @@ public class Biblioteca {
 
     public void listBooks(boolean checkedout) {
         for (int i = 0; i < books.size(); i++) {
-            if ((books.get(i).checkedout && checkedout) ||
-                    (!books.get(i).checkedout && !checkedout)) {
+            if ((books.get(i).isCheckedout() && checkedout) ||
+                    (!books.get(i).isCheckedout() && !checkedout)) {
                 System.out.print(i + " - " + books.get(i).toString());
             }
         }
     }
 
-    public Book checkoutBook(int index) {
-        try {
-            Book book = books.get(index);
+    public void listMovies(boolean checkedout) {
+        for (int i = 0; i < movies.size(); i++) {
+            if ((movies.get(i).isCheckedout() && checkedout) ||
+                    (!movies.get(i).isCheckedout() && !checkedout)) {
+                System.out.print(i + " - " + movies.get(i).toString());
+            }
+        }
+    }
 
-            if (!book.checkedout) {
-                book.checkedout = true;
-                System.out.println("Thank you! Enjoy the book");
+
+    public Inventory checkoutInv(char type, int index) {
+        try {
+            Inventory inv;
+            if      (type == 'b')    inv = books.get(index);
+            else if (type == 'm')    inv = movies.get(index);
+            else                     return null;
+
+            if (!inv.isCheckedout()) {
+                inv.checkoutBook();
+                System.out.println("Thank you! Enjoy the inventory\n");
             } else {
                 throw new IndexOutOfBoundsException();
             }
-            return book;
+            return inv;
         } catch (IndexOutOfBoundsException e) {
-            System.out.println("That book is not available.");
+            System.out.println("That inventory is not available.\n");
             return null;
         }
     }
 
-    public Book returnBook(int index) {
+    public Inventory returnInv(char type, int index) {
         try {
-            Book book = books.get(index);
+            Inventory inv;
+            if      (type == 'b')    inv = books.get(index);
+            else if (type == 'm')    inv = movies.get(index);
+            else                     return null;
 
-            if (book.checkedout) {
-                book.checkedout = false;
-                System.out.println("Thank you for returning the book.");
+            if (inv.isCheckedout()) {
+                inv.returnBook();
+                System.out.println("Thank you for returning the inventory.\n");
             } else {
                 throw new IndexOutOfBoundsException();
             }
-            return book;
+            return inv;
         } catch (IndexOutOfBoundsException e) {
-            System.out.println("That is not a valid book to return.");
+            System.out.println("That is not a valid inventory to return.\n");
             return null;
         }
     }
@@ -139,26 +182,28 @@ public class Biblioteca {
         System.out.println();
     }
 
-    public void continuousRunMenuItem(String mode) {
+    public void continuousRunMenuItem(String mode, char type) {
         boolean rerun;
+
+
+        System.out.println("Please type in the number corresponding to the inventory you would like to " + mode + ", or type in -1 to go back to the main menu:");
+        if (type == 'b')        listBooks((mode == "return"));
+        else if (type == 'm')   listMovies((mode == "return"));
+
         int index = Integer.parseInt(in.nextLine());
 
-        listBooks((mode == "return"));
-        System.out.println("Please type in the number corresponding to the book you would like to " + mode + ", or type in -1 to go back to the main menu:");
-
-
         if (index == -1) return;
-        if (mode == "checkout") rerun = (checkoutBook(index) == null);
-        else if (mode == "return") rerun = (returnBook(index) == null);
+        if (mode == "checkout") rerun = (checkoutInv(type, index) == null);
+        else if (mode == "return") rerun = (returnInv(type, index) == null);
         else return;
 
         while (rerun) {
-            System.out.println("Please type in the number corresponding to the book you would like to " + mode + ", or type in -1 to go back to the main menu:");
+            System.out.println("Please type in the number corresponding to the inventory you would like to " + mode + ", or type in -1 to go back to the main menu:");
             index = Integer.parseInt(in.nextLine());
 
             if (index == -1) return;
-            if (mode == "checkout") rerun = (checkoutBook(index) == null);
-            else if (mode == "return") rerun = (returnBook(index) == null);
+            if (mode == "checkout") rerun = (checkoutInv(type, index) == null);
+            else if (mode == "return") rerun = (returnInv(type, index) == null);
             else return;
         }
     }
@@ -168,5 +213,8 @@ public class Biblioteca {
 
     public List<Book> getBooks() {
         return books;
+    }
+    public List<Movie> getMovies() {
+        return movies;
     }
 }

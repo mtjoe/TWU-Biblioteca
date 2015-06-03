@@ -53,48 +53,99 @@ public class BibliotecaTest {
     }
 
     @Test
-    public void testCheckOut() {
-        Book book = library.checkoutBook(0);
-        String printed = new String(out.toByteArray());
-
-        assertEquals(printed, "Thank you! Enjoy the book\n");
-        assertTrue(book.checkedout);
-    }
-
-    @Test
-    public void testCheckOutFail() {
-        Book book = library.checkoutBook(library.getBooks().size());
-        String printed = new String(out.toByteArray());
-
-        assertEquals(printed, "That book is not available.\n");
-    }
-
-    @Test
-    public void testReturn() throws IOException {
-        Book book = library.checkoutBook(0);
-
-        library.returnBook(0);
-        String printed = new String(out.toByteArray());
-
-        assertEquals(printed, "Thank you! Enjoy the book\nThank you for returning the book.\n");
-        assertFalse(book.checkedout);
-    }
-
-    @Test
-    public void testReturnFail() throws IOException {
-        Book book = library.returnBook(library.getBooks().size());
-        String printed = new String(out.toByteArray());
-
-        assertEquals(printed, "That is not a valid book to return.\n");
-    }
-
-    @Test
-    public void testReturnStillInLibraryFail() throws IOException {
+    public void testCheckOutBook() {
         if (library.getBooks().size() > 0) {
-            library.returnBook(0);
+            Inventory book = library.checkoutInv('b', 0);
             String printed = new String(out.toByteArray());
 
-            assertEquals(printed, "That is not a valid book to return.\n");
+            assertEquals(printed, "Thank you! Enjoy the inventory\n\n");
+            assertTrue(book.isCheckedout());
         }
     }
+
+    @Test
+    public void testCheckOutBookFail() {
+        Inventory book = library.checkoutInv('b', library.getBooks().size());
+        String printed = new String(out.toByteArray());
+
+        assertEquals(printed, "That inventory is not available.\n\n");
+    }
+
+    @Test
+    public void testReturnBook() throws IOException {
+        Inventory book = library.checkoutInv('b', 0);
+
+        library.returnInv('b', 0);
+        String printed = new String(out.toByteArray());
+
+        assertEquals(printed, "Thank you! Enjoy the inventory\n\nThank you for returning the inventory.\n\n");
+        assertFalse(book.isCheckedout());
+    }
+
+    @Test
+    public void testReturnBookFail() throws IOException {
+        Inventory book = library.returnInv('b', library.getBooks().size());
+        String printed = new String(out.toByteArray());
+
+        assertEquals(printed, "That is not a valid inventory to return.\n\n");
+    }
+
+    @Test
+    public void testReturnBookStillInLibraryFail() throws IOException {
+        if (library.getBooks().size() > 0) {
+            library.returnInv('b', 0);
+            String printed = new String(out.toByteArray());
+
+            assertEquals(printed, "That is not a valid inventory to return.\n\n");
+        }
+    }
+
+    @Test
+    public void testCheckoutMovie() {
+        if (library.getMovies().size() > 0) {
+            Inventory movie = library.checkoutInv('b', 0);
+            String printed = new String(out.toByteArray());
+
+            assertEquals(printed, "Thank you! Enjoy the inventory\n\n");
+            assertTrue(movie.isCheckedout());
+        }
+    }
+
+    @Test
+    public void testCheckOutMovieFail() {
+        Inventory movie = library.checkoutInv('m', library.getMovies().size());
+        String printed = new String(out.toByteArray());
+
+        assertEquals(printed, "That inventory is not available.\n\n");
+    }
+
+    @Test
+    public void testReturnMovie() throws IOException {
+        Inventory movie = library.checkoutInv('m', 0);
+
+        library.returnInv('m', 0);
+        String printed = new String(out.toByteArray());
+
+        assertEquals(printed, "Thank you! Enjoy the inventory\n\nThank you for returning the inventory.\n\n");
+        assertFalse(movie.isCheckedout());
+    }
+
+    @Test
+    public void testReturnMovieFail() throws IOException {
+        Inventory movie = library.returnInv('m', library.getBooks().size());
+        String printed = new String(out.toByteArray());
+
+        assertEquals(printed, "That is not a valid inventory to return.\n\n");
+    }
+
+    @Test
+    public void testReturnMovieStillInLibraryFail() throws IOException {
+        if (library.getMovies().size() > 0) {
+            library.returnInv('b', 0);
+            String printed = new String(out.toByteArray());
+
+            assertEquals(printed, "That is not a valid inventory to return.\n\n");
+        }
+    }
+
 }
