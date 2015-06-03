@@ -55,7 +55,7 @@ public class BibliotecaTest {
     @Test
     public void testCheckOutBook() {
         if (library.getBooks().size() > 0) {
-            Inventory book = library.checkoutInv('b', 0);
+            Inventory book = library.checkoutInv('b', 0, library.getUsers().get(0));
             String printed = new String(out.toByteArray());
 
             assertEquals(printed, "Thank you! Enjoy the inventory\n\n");
@@ -65,7 +65,7 @@ public class BibliotecaTest {
 
     @Test
     public void testCheckOutBookFail() {
-        Inventory book = library.checkoutInv('b', library.getBooks().size());
+        Inventory book = library.checkoutInv('b', library.getBooks().size(), library.getUsers().get(0));
         String printed = new String(out.toByteArray());
 
         assertEquals(printed, "That inventory is not available.\n\n");
@@ -73,7 +73,7 @@ public class BibliotecaTest {
 
     @Test
     public void testReturnBook() throws IOException {
-        Inventory book = library.checkoutInv('b', 0);
+        Inventory book = library.checkoutInv('b', 0, library.getUsers().get(0));
 
         library.returnInv('b', 0);
         String printed = new String(out.toByteArray());
@@ -103,7 +103,7 @@ public class BibliotecaTest {
     @Test
     public void testCheckoutMovie() {
         if (library.getMovies().size() > 0) {
-            Inventory movie = library.checkoutInv('b', 0);
+            Inventory movie = library.checkoutInv('b', 0, library.getUsers().get(0));
             String printed = new String(out.toByteArray());
 
             assertEquals(printed, "Thank you! Enjoy the inventory\n\n");
@@ -113,7 +113,7 @@ public class BibliotecaTest {
 
     @Test
     public void testCheckOutMovieFail() {
-        Inventory movie = library.checkoutInv('m', library.getMovies().size());
+        Inventory movie = library.checkoutInv('m', library.getMovies().size(), library.getUsers().get(0));
         String printed = new String(out.toByteArray());
 
         assertEquals(printed, "That inventory is not available.\n\n");
@@ -121,7 +121,7 @@ public class BibliotecaTest {
 
     @Test
     public void testReturnMovie() throws IOException {
-        Inventory movie = library.checkoutInv('m', 0);
+        Inventory movie = library.checkoutInv('m', 0, library.getUsers().get(0));
 
         library.returnInv('m', 0);
         String printed = new String(out.toByteArray());
@@ -147,5 +147,32 @@ public class BibliotecaTest {
             assertEquals(printed, "That is not a valid inventory to return.\n\n");
         }
     }
+
+    @Test
+    public void testLogin() {
+        User user = library.getUsers().get(0);
+        library.login(user.getNumber(), user.getPassword());
+
+        assertEquals(library.currUser, user);
+    }
+
+    @Test
+    public void testLoginBorrow() {
+        User user = library.getUsers().get(0);
+        library.login(user.getNumber(), user.getPassword());
+        Inventory book = library.checkoutInv('b', 0, library.currUser);
+
+        assertEquals(book.getLastBorrowedBy(), user);
+    }
+
+    @Test
+    public void testUserInfo() {
+        User user = library.getUsers().get(0);
+
+        assertTrue(library.mainMenu.containsKey("My Info"));
+        assertEquals(user.toString(), "Name: " + user.getName() + "\nEmail: " + user.getEmail() + "\nPhone: "  + user.getPhone() + "\n");
+    }
+
+    // TODO: Test on only being able to return items we borrow
 
 }
