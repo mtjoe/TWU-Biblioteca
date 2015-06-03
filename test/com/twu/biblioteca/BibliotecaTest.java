@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 
-public class ExampleTest {
+public class BibliotecaTest {
     Biblioteca library;
     ByteArrayOutputStream out;
 
@@ -23,14 +23,6 @@ public class ExampleTest {
         // For testing print statements
         out = new ByteArrayOutputStream();
         System.setOut(new PrintStream(out));
-    }
-
-    @Test
-    public void testMenuResponseError() {
-        library.runMenuItem(library.mainMenu.length);
-        String printed = new String(out.toByteArray());
-
-        assertEquals(printed, "Select a valid option!\n\n");
     }
 
     @Test
@@ -62,7 +54,7 @@ public class ExampleTest {
 
     @Test
     public void testCheckOut() {
-        Book book = library.checkout(0);
+        Book book = library.checkoutBook(0);
         String printed = new String(out.toByteArray());
 
         assertEquals(printed, "Thank you! Enjoy the book\n");
@@ -71,7 +63,7 @@ public class ExampleTest {
 
     @Test
     public void testCheckOutFail() {
-        Book book = library.checkout(library.getBooks().size());
+        Book book = library.checkoutBook(library.getBooks().size());
         String printed = new String(out.toByteArray());
 
         assertEquals(printed, "That book is not available.\n");
@@ -79,7 +71,7 @@ public class ExampleTest {
 
     @Test
     public void testReturn() throws IOException {
-        Book book = library.checkout(0);
+        Book book = library.checkoutBook(0);
 
         library.returnBook(0);
         String printed = new String(out.toByteArray());
